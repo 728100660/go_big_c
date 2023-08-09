@@ -19,6 +19,6 @@
 """
 if __name__ == '__main__':
     def func(s):
-        return s.replace(" ", "%20")      # 速度太慢了
+        return s.replace(" ", "%20")
 
     assert func("We are happy.") == "We%20are%20happy."
