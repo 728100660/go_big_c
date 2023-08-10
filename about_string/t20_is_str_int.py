@@ -53,3 +53,71 @@
 1 <= s.length <= 20
 s 仅含英文字母（大写和小写），数字（0-9），加号 '+' ，减号 '-' ，空格 ' ' 或者点 '.' 。
 """
+# 学一手确定有限状态自动机 吧，if else有点太难了
+if __name__ == '__main__':
+    def is_number(string):
+        # 0 啥都没有 1: 第一个正负号   2: 符号+num   3: 符号+num+.    4: 符号 + num + . + num
+        # 5: 符号 + num + . + num + E/e   6: 符号 + num + . + num + E/e + 符号
+        # 7: 符号 + num + . + num + E/e + 符号 + num    8: 符号 + num + . + num + E/e + 符号 + num +    后加空格，此阶段不能再有数字了
+        if not string:
+            return False
+        s_end = string[-1]
+        if "a" <= s_end <= "z" or "A" <= s_end <= "Z" or s_end in ("+", "-"):
+            return False
+        stage = 0
+        max_idx = len(string) - 1
+        for idx, s1 in enumerate(string):
+            if stage == 8 and s1 != " ":
+                return False
+            if ord("a") <= ord(s1) <= ord("z") or ord("A") <= ord(s1) <= ord("Z"):
+                if s1 not in ("e", "E"):     # 非法字符
+                    return False
+                if stage not in (2, 3, 4):     # 非法字符
+                    return False
+                stage = 5
+            elif ord("0") <= ord(s1) <= ord("9"):
+                if stage in (0, 1, 2):
+                    stage = 2
+                elif stage in (3, 4):
+                    stage = 4
+                elif stage in (5, 6, 7):
+                    stage = 7
+            elif s1 in("-", "+"):
+                if stage == 0:
+                    stage = 1
+                elif stage == 5:
+                    stage = 6
+                else:
+                    return False
+            elif s1 == " ":
+                if stage in (1, 5, 6):     # 非法字符
+                    return False
+                elif stage != 0:
+                    stage = 8
+            elif s1 == ".":
+                if stage not in (0, 1, 2):     # 非法字符
+                    return False
+                # 前后都为空或者不存在就是非法的数据
+                pre_val = string[idx - 1] if idx - 1 >= 0 else " "
+                next_val = string[idx + 1] if idx + 1 <= max_idx else " "
+                if pre_val in (" ", "-", "+") and next_val in (" ", "e", "E"):
+                    return False
+                stage = 3
+        return True if stage in (2, 3, 4, 7, 8) else False
+
+    assert is_number("0") == True
+    assert is_number("e") == False
+    assert is_number(".") == False
+    assert is_number("    .1  ") == True
+    assert is_number("    -.1  ") == True
+    assert is_number("    -.1+   ") == False
+    assert is_number("     ") == False
+    assert is_number("  3.  ") == True
+    assert is_number("  .3  ") == True
+    assert is_number("  .  ") == False
+    assert is_number("+-.") == False
+    assert is_number("-.") == False
+    assert is_number("46.e3") == True
+    assert is_number(".e3") == False
+    assert is_number("6ee69") == False
+    assert is_number(" 005047e+6") == True
