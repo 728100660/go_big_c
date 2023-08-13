@@ -58,5 +58,6 @@ class Solution:
                 root.next = left
                 left.pre = root.next
             right = handle_node(root.right)
-            if right
+            if right:
+                pass
             return root
