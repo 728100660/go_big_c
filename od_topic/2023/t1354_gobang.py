@@ -55,11 +55,20 @@
 说明
 
 可以的位置很多，5最接近中间的位置坐标
+
+
+=====
+1
+0 1 1 1 1 1 0 0 -1 1 0 1 1 0
+-1
+======
+
 """
 
 """
 抛弃常识，按照他说的做就行
 说不能超过五个就不能超过五个
+注意需要满足：使得当前子的最大连续长度变大
 """
 def main():
     color = int(input())
@@ -78,7 +87,8 @@ def main():
         if grid_color != color:
             pre_max = 0
             continue
-        max_len = max(pre_max + 1, max_len)
+        pre_max = pre_max + 1
+        max_len = max(pre_max, max_len)
     # 标记最大长度是否增长过
     add_flag = 0
 
