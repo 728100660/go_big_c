@@ -61,38 +61,55 @@
 抛弃常识，按照他说的做就行
 说不能超过五个就不能超过五个
 """
+def main():
+    color = int(input())
+    grid = list(map(int, input().split(" ")))
+    # 遍历，找到每个空位判断是否能下子
+    # 其他子，跳过
+    # 当前子，记录长度
+    # 空，看前后，记录长度，判断能否下子
+    mid = len(grid) // 2    # 中间位置
+    pos = -1     # 落子位置
 
-color = int(input())
-grid = list(map(int, input().split(" ")))
-# 遍历，找到每个空位判断是否能下子
-# 其他子，跳过
-# 当前子，记录长度
-# 空，看前后，记录长度，判断能否下子
-mid = len(grid) // 2    # 中间位置
-pos = -1     # 落子位置
-max_len = 0     # 最大长度
-for idx, grid_color in enumerate(grid):
-    if grid_color != 0:
-        continue
-    grid_len = 1    # 本次落子长度
-    tmp_idx = idx - 1
-    while tmp_idx >= 0 and grid[tmp_idx] == color:
-        grid_len += 1
-        tmp_idx -= 1
-    tmp_idx = idx + 1
-    while tmp_idx < len(grid) and grid[tmp_idx] == color:
-        grid_len += 1
-        tmp_idx += 1
-    if grid_len > 5 or grid_len == 1:        # 长度大于5或者周围没有同颜色子
-        continue
-    if grid_len > max_len:
-        pos = idx
-        max_len = grid_len
-    elif grid_len == max_len:
-        if abs(mid - idx) < abs(mid - pos):     # 此次落点更加居中
+    # 初始化当前子的最大长度
+    max_len = 0     # 最大长度
+    pre_max = 0
+    for grid_color in grid:
+        if grid_color != color:
+            pre_max = 0
+            continue
+        max_len = max(pre_max + 1, max_len)
+    # 标记最大长度是否增长过
+    add_flag = 0
+
+    for idx, grid_color in enumerate(grid):
+        if grid_color != 0:
+            continue
+        grid_len = 1    # 本次落子长度
+        tmp_idx = idx - 1
+        while tmp_idx >= 0 and grid[tmp_idx] == color:
+            grid_len += 1
+            tmp_idx -= 1
+        tmp_idx = idx + 1
+        while tmp_idx < len(grid) and grid[tmp_idx] == color:
+            grid_len += 1
+            tmp_idx += 1
+        if grid_len > 5 or grid_len == 1:        # 长度大于5或者周围没有同颜色子
+            continue
+        if grid_len > max_len:
             pos = idx
             max_len = grid_len
-        elif abs(mid - idx) == abs(mid - pos) and idx < pos:    # 同等距离取idx小的
-            pos = idx
-            max_len = grid_len
-print(pos)
+            add_flag = 1
+        elif grid_len == max_len:
+            if abs(mid - idx) < abs(mid - pos):     # 此次落点更加居中
+                pos = idx
+                max_len = grid_len
+            elif abs(mid - idx) == abs(mid - pos) and idx < pos:    # 同等距离取idx小的
+                pos = idx
+                max_len = grid_len
+    if add_flag:
+        print(pos)
+    else:
+        print(-1)
+
+main()
