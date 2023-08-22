@@ -34,7 +34,39 @@
 数字最小值位数不小于  len(str) // n
 
 太复杂了，网上搜了下，居然是暴力解法，离谱
+
+map记录各个数字出现的个数
+判断起始位数 = len(string) / num
+从起始位开始枚举，符合条件就是答案
 """
 
 
+def main():
+    string, num_count = input().split()
+    num_count = int(num_count)
 
+    min_wei = len(string) // num_count  # 起始位数
+    if min_wei == 1:
+        start_num = 0
+    else:
+        start_num = 10**(min_wei-1)
+    # 初始化计数map
+    words_count_info = {s: 0 for s in range(10)}
+    for s in string:
+        words_count_info[int(s)] += 1
+
+    # 暴力
+    while start_num<=1000:
+        tmp_count_map = {s: 0 for s in range(10)}
+        for offset in range(num_count):      # 往后找num_count-1个数字
+            num = start_num + offset
+            while num:
+                tmp_count_map[num % 10] += 1
+                num = num // 10
+        if tmp_count_map == words_count_info:
+            return start_num
+        start_num += 1      # 每回合增加起始值，遍历
+    return 0
+
+
+print(main())
