@@ -44,9 +44,13 @@
 
 """
 感觉像动态规划
-dp[i][j]   表示选择的旅游团下标为i，车内容量为j 的方案数目
-dp[i][j] = dp[i-1]
-dp[i] 表示汽车容量为i的时候的方案数
+dp[i][j]   表示选择的旅游团为第i个，车内容量为j 的方案数目
+不上车: dp[i][j] = dp[i-1][j]
+上车: dp[i][j] = dp[i-1][j-weight]
+总方案数即为不上车的方案加上上车的方案
+其实只用到了上一列
+pre_dp[j]   j为车内容量
+cur_dp[j] = pre[j-weight] + pre[j]
 
 dp[i] = dp[i - cur_val] + 1     # cur_val为当前旅游团人数
 """
@@ -56,17 +60,36 @@ def main():
     team_num_list.sort()
     total_cap = int(input())
 
-    dp = [0] * total_cap
-    for cap in range(total_cap):
-        for cur_team in team_num_list:
-            if cur_team > cap:
+    cur_dp = [0] * (total_cap + 1)
+    cur_dp[0] = 1       # 车内容量为0也是一种方案
+    for i in range(len(team_num_list)):
+        pre_dp = cur_dp # 当前层dp
+        for j in range(total_cap, 0, -1):   # 从后往前走，防止重复调用覆盖掉pre的值，重复计算, 0不用考虑，因为一直是1
+            cur_weight = team_num_list[i]
+            if j < cur_weight:
                 continue
-            if cap == cur_team:
-                dp[cap] += 1
-                continue
-            if dp[cap - cur_team] != 0:     # 当前容量有响应路径走过来
-                dp[cap] = dp[cap - cur_team] + 1
-    return dp[total_cap - 1]
+            cur_dp[j] = pre_dp[j] + pre_dp[j-cur_weight]
+    return cur_dp[total_cap]
 
 
 print(main())
+
+# def main():
+#     team_num_list = list(map(int, input().split(",")))
+#     team_num_list.sort()
+#     total_cap = int(input())
+#
+#     dp = [0] * total_cap
+#     for cap in range(total_cap):
+#         for cur_team in team_num_list:
+#             if cur_team > cap:
+#                 continue
+#             if cap == cur_team:
+#                 dp[cap] += 1
+#                 continue
+#             if dp[cap - cur_team] != 0:     # 当前容量有响应路径走过来
+#                 dp[cap] = dp[cap - cur_team] + 1
+#     return dp[total_cap - 1]
+#
+#
+# print(main())
