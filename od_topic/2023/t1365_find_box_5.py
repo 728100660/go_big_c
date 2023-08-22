@@ -61,7 +61,7 @@ def main():
         # 宝箱之和往右移动
         tmp_sum -= boxs[idx - k_nums]   # 减左边
         tmp_sum += boxs[idx]        # 加右边
-        max_val = max(tmp_sum, max_val)  # 结尾正常来说取不到，所以要+1
+        max_val = max(tmp_sum, max_val)
     return max_val
 
 print(main())
