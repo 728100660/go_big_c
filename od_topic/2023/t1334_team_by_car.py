@@ -52,7 +52,7 @@ dp[i][j]   表示选择的旅游团为第i个，车内容量为j 的方案数目
 pre_dp[j]   j为车内容量
 cur_dp[j] = pre[j-weight] + pre[j]
 
-dp[i] = dp[i - cur_val] + 1     # cur_val为当前旅游团人数
+以后做01背包问题都直接使用优化版本，因为优化的代码块，思路清晰，不容易出错
 """
 
 def main():
