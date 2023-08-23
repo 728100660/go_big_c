@@ -29,30 +29,51 @@ N>0且 N<64 x 64
 
 """
 思路：因为是矩形，且连续图形，所以周长等于(max(x)-min(x) + max(y) - min(y)) * 2
+
+思路2：思路1是错误的，当图形为凹形的时候就不适用了，周长为最外边格子周长之和
+适用bfs
+return 上下左右相加
+退出条件
+当前值为0：return 1 
+当前值被访问过且不为0：return 0
+
+可能的边界条件：只有一个格子
 """
+
+
+def dfs(grid, flag_grid, target, i, j):
+    # 越界判断
+    if not (0 <= i < len(grid) and 0 <= j < len(grid[0])):
+        return 1
+    if grid[i][j] != target:    # 到边界了
+        return 1
+    if flag_grid[i][j] == 1:    # 周围有已访问过格子
+        return 0
+    flag_grid[i][j] = 1     # 标记访问
+    offset_list = ((0, 1), (0, -1), (1, 0), (-1, 0))
+    res = 0
+    for offset_i, offset_j in offset_list:
+        res += dfs(grid, flag_grid, target, i+offset_i, j+offset_j)
+    return res
+
 
 
 def main():
     graph_num = int(input())
     res = []
+    grid = [[0] * 64 for _ in range(64)]
+    flag_grid = [[0] * 64 for _ in range(64)]   # 访问标记地图
+    # 初始化矩阵
     for _ in range(graph_num):
         graph_info = list(map(int, input().split(" ")))
+        fill_num = graph_info[0]    # 填充数字
         idx = 1
-        max_i, min_i = graph_info[1], graph_info[1]
-        max_j, min_j = graph_info[2], graph_info[2]
         while idx < len(graph_info):
-            i, j = graph_info[idx], graph_info[idx + 1]
-            max_i = max(max_i, i)
-            max_j = max(max_j, j)
-            min_i = min(min_i, i)
-            min_j = min(min_j, j)
+            i = graph_info[idx]
+            j = graph_info[idx+1]
+            grid[i][j] = fill_num
             idx += 2
-        max_i = min(max_i, 63)
-        max_j = min(max_j, 63)
-        min_i = max(min_i, 0)
-        min_j = max(min_j, 0)
-        this_res = (max_i - min_i + 1 + max_j - min_j + 1) * 2
-        res.append(this_res)
+        res.append(dfs(grid, flag_grid, fill_num, graph_info[1], graph_info[2]))
 
     for total in res:
         print(total, end=" ")
