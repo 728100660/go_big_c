@@ -47,14 +47,43 @@
 
 """
 二分，枚举，失败
+题目需要给出符合条件的最大间距
+思路：首先排序位置
+从开始位置往左右两边查找，是否有满足条件的pos，有的话，种植，植树数目+1，默认植树=1
+二分法
+左右间距小于，当前间距   则 间距左移，缩小
+左右间距大于 当前间距    则 记录当前结果，右移看看还有没有更大的符合要求的间距
+
+1. 看清题目看清题目看清题目
 """
 
 
 def main():
-    start_grid = int(input())
-    grid = list(map(int, input().split()))
+    pos_num = int(input())  # 适合种树的坐标数量
+    pos_list = list(map(int, input().split()))
     tree_num = int(input())
 
+    pos_list.sort()
+    max_gap = 0     # 最大间距
+
+    left = 1
+    right = pos_list[-1] - pos_list[0]
+    while left <= right:
+        mid_gap = (left + right) // 2
+        plant_tree = 1  # 默认植树数目为1
+        # 查找右边符合条件pos数
+        right_pre_start = 0   # 右边上一个种植下标
+        for idx in range(len(pos_list)):
+            if pos_list[idx] - pos_list[right_pre_start] >= mid_gap:    # 符合条件，种植
+                right_pre_start = idx
+                plant_tree += 1
+
+        if plant_tree >= tree_num:      # 符合条件，记录结果，增大间距
+            max_gap = max(mid_gap, max_gap)
+            left = mid_gap + 1
+        else:
+            right = mid_gap - 1
+    return max_gap
 
 
 print(main())
