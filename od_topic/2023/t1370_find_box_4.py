@@ -49,4 +49,33 @@
 只会暴力，但是估计超时
 
 使用单调栈解决
+下一个更大数(单调递减栈)，下一个更小数，使用单调栈解决
+
+stack 存下标
+当前下标idx
+nums[idx] <= nums[stack[-1]]时 入栈
+nums[idx] > nums[stack[-1]]时 出栈
+
+循环问题，找两遍，第二遍直到 stack[-1]下标(栈顶的下标肯定比栈底的下标大，至此第二遍遍历完毕)
 """
+
+
+def main():
+    nums = list(map(int, input().split(",")))
+    res = [-1] * len(nums)
+    # 下标栈
+    stack = []
+    # 第一遍正常遍历
+    for i in range(len(nums)):
+        while stack and nums[i] > nums[stack[-1]]:
+            res[stack.pop()] = nums[i]
+        stack.append(i)
+    # 第二遍只pop不append
+    for i in range(len(nums)):
+        while stack and nums[i] > nums[stack[-1]]:
+            res[stack.pop()] = nums[i]
+    return ",".join(map(str, res))
+
+
+print(main())
+
