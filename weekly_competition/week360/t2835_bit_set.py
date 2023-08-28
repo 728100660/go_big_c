@@ -69,6 +69,11 @@ target开始遍历，从右到左，找到第i位为1的值， 例如，10，第
 
 之后继续如此
 思路
+关键点：
+小于等于2**i次方的所有数之和 >= 2**i，则这些数一定能组成一个列表使得和为2**i
+注意：如果不清楚运算优先级，记得加括号，mask = (1 << (i+1)) - 1
+
+
 """
 from typing import List
 
@@ -85,25 +90,32 @@ class Solution:
 
         max_i = target.bit_length() - 1 # 最多可右移位数
         i = 0
-        ans = 0 #操作次数
-        while i<=max_i:
-            if (target >> i) & 1:     # 第i位为1
-                if count_map.get(1 << i, 0) > 0:  # 存在2**i的数
-                    i += 1
-                    continue
-                while count_map.get(1 << i, 0) <= 0:   # 查找是否有比2**(i)大的数
-                    # 每左移一次就相当于分解一次
-                    ans += 1
-                    i += 1
-                # while 出来，对当前num进行分解操作,cnt-1
-                count_map[1 << i] -= 1
-            i += 1  ######
+        ans = 0    # 操作次数
+        tmp_sum = 0     # 和
+        while i <= max_i:
+            tmp_sum += count_map.get(1 << i, 0) << i        # count * num
+            mask = (1 << (i+1)) - 1
+            if tmp_sum >= target & mask:        # 小于等于2**i次方的所有数之和 >= 2**i，则这些数一定能组成一个列表使得和为2**i
+                i += 1
+                continue
+            # 至少分解一次
+            i += 1
+            ans += 1
+            while count_map.get(1 << i, 0) <= 0:   # 查找是否有比2**(i)大的数
+                # 每左移一次就相当于分解一次
+                ans += 1
+                i += 1
+            # while 出来，对当前num进行分解操作,cnt-1       # 注意：这里不需要减1，我们记录cnt的作用是用来求和，并不是真实作用
+            # count_map[1 << i] -= 1
 
         return ans
 
 
 if __name__ == '__main__':
     oSolute = Solution()
+    assert oSolute.minOperations([64,32,2,8], 5) == 2
+    assert oSolute.minOperations([16,64,4,128], 6) == 3
+    assert oSolute.minOperations([128,1,256,1,1,1,32], 6) == 3
     assert oSolute.minOperations([1, 2, 8], 7) == 1
     assert oSolute.minOperations([1, 32, 1, 2], 12) == 2
     assert oSolute.minOperations([1, 32, 1], 35) == -1
