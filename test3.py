@@ -1,6 +1,6 @@
 from typing import List
 
-
+## 想不出来什么好方法
 class Solution:
     # def minimumMoves(self, grid: List[List[int]]) -> int:
     #     """思路，因为元素之和为9，所以，>1的石头肯定是要分出去的，>1开始广度优先，把石头分出去"""
